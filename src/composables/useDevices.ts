@@ -7,6 +7,7 @@ export type Device = {
   name: string;
   description: string;
   category: string;
+  quantity?: number;
 };
 
 const API_BASE = appConfig.apiBaseUrl;
