@@ -1,12 +1,24 @@
 <script setup lang="ts">
-import { onMounted, watch } from 'vue';
+import { onMounted, watch, computed } from 'vue';
 import { useDevices } from '@/composables/useDevices';
 const { devices, loading, error, fetchDevices } = useDevices();
 import { useAuth0 } from '@auth0/auth0-vue';
-const { isAuthenticated } = useAuth0();
+const { isAuthenticated, user } = useAuth0();
 
-// Check if user has Student role in any common claim
-// Removed isStudent computation as it's no longer needed
+// Computed property to check if user has Student role
+const isStudent = computed(() => {
+  if (!user.value) return false;
+  // Adjust the claim path as needed for your Auth0 setup
+  // Common custom claim: 'https://yourdomain/roles'
+  const roles =
+    user.value['https://yourdomain/roles'] ||
+    user.value[
+      'https://loanwebappdevnh66store.z33.web.core.windows.net/roles'
+    ] ||
+    user.value['roles'] ||
+    [];
+  return Array.isArray(roles) && roles.includes('Student');
+});
 
 onMounted(() => {
   fetchDevices();
@@ -37,7 +49,7 @@ watch(isAuthenticated, () => {
         <!-- Category shown under name, above description -->
         <div v-if="p.category" class="category">{{ p.category }}</div>
         <p v-if="p.description" class="desc">{{ p.description }}</p>
-        <div v-if="isAuthenticated" class="quantity">
+        <div v-if="isStudent" class="quantity">
           Quantity: {{ p.quantity ?? 'N/A' }}
         </div>
       </li>
