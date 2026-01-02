@@ -5,6 +5,9 @@ const { devices, loading, error, fetchDevices } = useDevices();
 import { useAuth0 } from '@auth0/auth0-vue';
 const { isAuthenticated } = useAuth0();
 
+// Check if user has Student role in any common claim
+// Removed isStudent computation as it's no longer needed
+
 onMounted(() => {
   fetchDevices();
 });
@@ -34,6 +37,9 @@ watch(isAuthenticated, () => {
         <!-- Category shown under name, above description -->
         <div v-if="p.category" class="category">{{ p.category }}</div>
         <p v-if="p.description" class="desc">{{ p.description }}</p>
+        <div v-if="isAuthenticated" class="quantity">
+          Quantity: {{ p.quantity ?? 'N/A' }}
+        </div>
       </li>
     </ul>
   </div>
