@@ -1,27 +1,9 @@
 <script setup lang="ts">
-import { onMounted, watch, computed } from 'vue';
+import { onMounted, watch } from 'vue';
 import { useDevices } from '@/composables/useDevices';
 const { devices, loading, error, fetchDevices } = useDevices();
 import { useAuth0 } from '@auth0/auth0-vue';
-const { isAuthenticated, user } = useAuth0();
-
-// Check if user has Student role
-// Debug: log user object to inspect roles structure
-if (import.meta.env.DEV) {
-  watch(user, (val) => {
-    // eslint-disable-next-line no-console
-    console.log('Auth0 user object:', val);
-  }, { immediate: true });
-}
-
-// Check if user has Student role in any common claim
-const isStudent = computed(() => {
-  if (!isAuthenticated.value || !user.value) return false;
-  // Try common Auth0 custom claim and fallback to user.roles
-  const customClaim = Object.keys(user.value).find(k => k.endsWith('/roles'));
-  const roles = (customClaim && user.value[customClaim]) || user.value.roles || [];
-  return Array.isArray(roles) && roles.includes('Student');
-});
+const { isAuthenticated } = useAuth0();
 
 onMounted(() => {
   fetchDevices();
@@ -49,13 +31,9 @@ watch(isAuthenticated, () => {
         <div class="row">
           <strong class="name">{{ p.name }}</strong>
         </div>
+        <!-- Category shown under name, above description -->
         <div v-if="p.category" class="category">{{ p.category }}</div>
         <p v-if="p.description" class="desc">{{ p.description }}</p>
-        <!-- Show quantity and Loan button only for authenticated Student role -->
-          <template v-if="isAuthenticated && isStudent">
-            <div class="quantity">Quantity: {{ p.quantity ?? 'N/A' }}</div>
-            <button class="loan-btn">Loan</button>
-          </template>
       </li>
     </ul>
     <!-- (CSS removed from template) -->
@@ -110,24 +88,5 @@ watch(isAuthenticated, () => {
 }
 .error button {
   margin-top: 0.5rem;
-}
-.quantity {
-  margin-top: 0.5rem;
-  color: #2563eb;
-  font-weight: 500;
-}
-.loan-btn {
-  margin-top: 0.5rem;
-  background: #2563eb;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-  font-weight: 600;
-  transition: background 0.2s;
-}
-.loan-btn:hover {
-  background: #1d4ed8;
 }
     margin-top: 0.5rem;
