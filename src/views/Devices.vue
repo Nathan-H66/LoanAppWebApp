@@ -15,8 +15,16 @@ const handleLoan = async (device: any) => {
       user.value.email,
       getAccessTokenSilently,
     );
-    // Optionally show a success message or refresh device/loan list
-    alert('Loan created!');
+    // Calculate due date 2 days from now
+    const dueDate = new Date();
+    dueDate.setDate(dueDate.getDate() + 2);
+    const dueDateStr = dueDate.toLocaleDateString(undefined, {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+    alert(`Loan created! Due on ${dueDateStr}`);
   } catch (e) {
     alert('Failed to create loan.');
   }
