@@ -20,7 +20,7 @@ jobs:
       VITE_LOANS_API_BASE_URL: https://loanapploan-test-nh66-func.azurewebsites.net/api/loans
       VITE_AUTH0_DOMAIN: loanapp-dev-nh66.uk.auth0.com
       VITE_AUTH0_CLIENT_ID: eBOGo7xGVMyBcD2mNYHWGpcqcoHPWSeC
-      VITE_AUTH0_AUDIENCE: https://loanapp-dev-nh66.uk.auth0.com/api/v2/
+      VITE_AUTH0_AUDIENCE: https://loan/api
 
     steps:
       - name: Checkout code

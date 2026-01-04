@@ -1,14 +1,17 @@
 // Delete a loan (DELETE)
 export async function deleteLoan(
   loanId: string,
-  getAccessTokenSilently: () => Promise<string | undefined>,
+  getAccessTokenSilently: (options?: any) => Promise<string | undefined>,
 ) {
   const url = `${appConfig.loansApiBaseUrl}/${loanId}`;
   const headers: Record<string, string> = {
     Accept: 'application/json',
   };
   try {
-    const token = await getAccessTokenSilently();
+    const token = await getAccessTokenSilently({
+      audience: 'https://loan/api', // Use your Auth0 API identifier
+      scope: 'delete:loans',
+    } as any);
     if (token) headers.Authorization = `Bearer ${token}`;
   } catch {}
   const res = await fetch(url, {
@@ -30,7 +33,7 @@ export async function createLoan(
   deviceId: string,
   deviceName: string,
   user: string,
-  getAccessTokenSilently: () => Promise<string | undefined>,
+  getAccessTokenSilently: (options?: any) => Promise<string | undefined>,
 ) {
   const url = appConfig.loansApiBaseUrl;
   const body = JSON.stringify({ deviceId, deviceName, user });
@@ -39,7 +42,10 @@ export async function createLoan(
     Accept: 'application/json',
   };
   try {
-    const token = await getAccessTokenSilently();
+    const token = await getAccessTokenSilently({
+      audience: 'https://loan/api',
+      scope: 'create:loan',
+    } as any);
     if (token) headers.Authorization = `Bearer ${token}`;
   } catch {}
   const res = await fetch(url, {
@@ -81,7 +87,10 @@ export function useLoans() {
       const headers: Record<string, string> = { Accept: 'application/json' };
       if (isAuthenticated.value) {
         try {
-          const token = await getAccessTokenSilently();
+          const token = await getAccessTokenSilently({
+            audience: 'https://loan/api',
+            scope: 'read:loans',
+          } as any);
           if (token) headers.Authorization = `Bearer ${token}`;
         } catch {}
       }
