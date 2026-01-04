@@ -15,6 +15,21 @@ const returnTo = window.location.origin;
         <span v-if="!isLoading && isAuthenticated && user" class="user">
           Signed in as {{ user.name || user.email }}
         </span>
+        <RouterLink
+          v-if="
+            isAuthenticated &&
+            user &&
+            (user['https://yourdomain/roles']?.includes('Staff') ||
+              user[
+                'https://loanwebappdevnh66store.z33.web.core.windows.net/roles'
+              ]?.includes('Staff') ||
+              (Array.isArray(user['roles']) && user['roles'].includes('Staff')))
+          "
+          to="/loans"
+          class="nav-btn"
+        >
+          Loans
+        </RouterLink>
         <button v-if="!isAuthenticated" @click="loginWithRedirect()">
           Sign in
         </button>
@@ -79,3 +94,8 @@ const returnTo = window.location.origin;
   padding: 1rem;
 }
 </style>
+
+/* Add style for nav-btn */ .nav-btn { background: #2563eb; color: white;
+border: none; padding: 0.4rem 0.75rem; border-radius: 6px; cursor: pointer;
+margin-right: 0.5rem; text-decoration: none; font-size: 1rem; transition:
+background 0.2s; } .nav-btn:hover { background: #1d4ed8; }
