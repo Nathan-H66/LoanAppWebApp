@@ -52,6 +52,17 @@ watch(isAuthenticated, () => {
         <div v-if="isStudent" class="quantity">
           Quantity: {{ p.quantity ?? 'N/A' }}
         </div>
+        <button
+          v-if="isStudent"
+          class="loan-btn"
+          @click="
+            () => {
+              /* TODO: Connect to loan microservice */
+            }
+          "
+        >
+          Loan
+        </button>
       </li>
     </ul>
   </div>
