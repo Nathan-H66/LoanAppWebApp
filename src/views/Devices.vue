@@ -22,11 +22,9 @@ const handleLoan = async (device: any) => {
   }
 };
 
-// Computed property to check if user has Student role
-const isStudent = computed(() => {
+// Computed property to check if user has Student or Staff role
+const hasLoanAccess = computed(() => {
   if (!user.value) return false;
-  // Adjust the claim path as needed for your Auth0 setup
-  // Common custom claim: 'https://yourdomain/roles'
   const roles =
     user.value['https://yourdomain/roles'] ||
     user.value[
@@ -34,7 +32,10 @@ const isStudent = computed(() => {
     ] ||
     user.value['roles'] ||
     [];
-  return Array.isArray(roles) && roles.includes('Student');
+  return (
+    Array.isArray(roles) &&
+    (roles.includes('Student') || roles.includes('Staff'))
+  );
 });
 
 onMounted(() => {
@@ -66,10 +67,14 @@ watch(isAuthenticated, () => {
         <!-- Category shown under name, above description -->
         <div v-if="p.category" class="category">{{ p.category }}</div>
         <p v-if="p.description" class="desc">{{ p.description }}</p>
-        <div v-if="isStudent" class="quantity">
+        <div v-if="hasLoanAccess" class="quantity">
           Quantity: {{ p.quantity ?? 'N/A' }}
         </div>
-        <button v-if="isStudent" class="loan-btn" @click="() => handleLoan(p)">
+        <button
+          v-if="hasLoanAccess"
+          class="loan-btn"
+          @click="() => handleLoan(p)"
+        >
           Loan
         </button>
       </li>
