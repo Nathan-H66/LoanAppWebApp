@@ -1,3 +1,30 @@
+// Delete a loan (DELETE)
+export async function deleteLoan(
+  loanId: string,
+  getAccessTokenSilently: () => Promise<string | undefined>,
+) {
+  const url = `${appConfig.loansApiBaseUrl}/${loanId}`;
+  const headers: Record<string, string> = {
+    Accept: 'application/json',
+  };
+  try {
+    const token = await getAccessTokenSilently();
+    if (token) headers.Authorization = `Bearer ${token}`;
+  } catch {}
+  const res = await fetch(url, {
+    method: 'DELETE',
+    headers,
+  });
+  if (!res.ok) throw new Error('Failed to delete loan');
+  // Only try to parse JSON if there is content
+  if (
+    res.status !== 204 &&
+    res.headers.get('content-type')?.includes('application/json')
+  ) {
+    return await res.json();
+  }
+  return null;
+}
 // Create a loan (POST)
 export async function createLoan(
   deviceId: string,

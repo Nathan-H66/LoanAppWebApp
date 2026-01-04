@@ -1,9 +1,20 @@
 <script setup lang="ts">
 import { onMounted } from 'vue';
-import { useLoans } from '@/composables/useLoans';
+import { useLoans, deleteLoan } from '@/composables/useLoans';
 const { loans, loading, error, fetchLoans } = useLoans();
 import { useAuth0 } from '@auth0/auth0-vue';
-const { isAuthenticated, user } = useAuth0();
+const { isAuthenticated, user, getAccessTokenSilently } = useAuth0();
+
+// Handler for marking a loan as returned
+const handleReturnLoan = async (loanId: string) => {
+  try {
+    await deleteLoan(loanId, getAccessTokenSilently);
+    await fetchLoans(); // Refresh list after deletion
+    alert('Loan marked as returned.');
+  } catch (e) {
+    alert('Failed to mark loan as returned.');
+  }
+};
 
 // Computed property to check if user has Staff role
 import { computed } from 'vue';
@@ -47,6 +58,9 @@ onMounted(() => {
             <span>Start: {{ l.loanStartDate }}</span>
             <span>Due: {{ l.loanDueDate }}</span>
           </div>
+          <button class="return-btn" @click="() => handleReturnLoan(l.id)">
+            Mark as Returned
+          </button>
         </li>
       </ul>
     </template>
@@ -90,6 +104,20 @@ onMounted(() => {
   font-size: 0.95em;
   display: flex;
   gap: 1.5em;
+}
+.return-btn {
+  margin-top: 1em;
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+.return-btn:hover {
+  background: #b91c1c;
 }
 .loading,
 .error,
