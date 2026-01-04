@@ -1,7 +1,16 @@
 <script setup lang="ts">
-import { onMounted, watch, computed } from 'vue';
+import { onMounted, watch, computed, watchEffect } from 'vue';
 import { useDevices } from '@/composables/useDevices';
 const { devices, loading, error, fetchDevices } = useDevices();
+
+// Watch for error state and show popup if device service fails
+watchEffect(() => {
+  if (error.value) {
+    alert(
+      'The device service is not working as intended. Please try again later.',
+    );
+  }
+});
 import { useAuth0 } from '@auth0/auth0-vue';
 const { isAuthenticated, user, getAccessTokenSilently } = useAuth0();
 import { createLoan } from '@/composables/useLoans';
