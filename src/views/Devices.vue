@@ -3,7 +3,24 @@ import { onMounted, watch, computed } from 'vue';
 import { useDevices } from '@/composables/useDevices';
 const { devices, loading, error, fetchDevices } = useDevices();
 import { useAuth0 } from '@auth0/auth0-vue';
-const { isAuthenticated, user } = useAuth0();
+const { isAuthenticated, user, getAccessTokenSilently } = useAuth0();
+import { createLoan } from '@/composables/useLoans';
+// Handler for loan creation
+const handleLoan = async (device: any) => {
+  if (!user.value || !user.value.email) return;
+  try {
+    await createLoan(
+      device.id,
+      device.name,
+      user.value.email,
+      getAccessTokenSilently,
+    );
+    // Optionally show a success message or refresh device/loan list
+    alert('Loan created!');
+  } catch (e) {
+    alert('Failed to create loan.');
+  }
+};
 
 // Computed property to check if user has Student role
 const isStudent = computed(() => {
@@ -52,15 +69,7 @@ watch(isAuthenticated, () => {
         <div v-if="isStudent" class="quantity">
           Quantity: {{ p.quantity ?? 'N/A' }}
         </div>
-        <button
-          v-if="isStudent"
-          class="loan-btn"
-          @click="
-            () => {
-              /* TODO: Connect to loan microservice */
-            }
-          "
-        >
+        <button v-if="isStudent" class="loan-btn" @click="() => handleLoan(p)">
           Loan
         </button>
       </li>

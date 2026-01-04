@@ -1,3 +1,28 @@
+// Create a loan (POST)
+export async function createLoan(
+  deviceId: string,
+  deviceName: string,
+  user: string,
+  getAccessTokenSilently: () => Promise<string | undefined>,
+) {
+  const url = appConfig.loansApiBaseUrl;
+  const body = JSON.stringify({ deviceId, deviceName, user });
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+  };
+  try {
+    const token = await getAccessTokenSilently();
+    if (token) headers.Authorization = `Bearer ${token}`;
+  } catch {}
+  const res = await fetch(url, {
+    method: 'POST',
+    headers,
+    body,
+  });
+  if (!res.ok) throw new Error('Failed to create loan');
+  return await res.json();
+}
 import { ref, type Ref } from 'vue';
 import { appConfig } from '@/config/appConfig';
 import { useAuth0 } from '@auth0/auth0-vue';
