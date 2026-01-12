@@ -10,7 +10,16 @@ const handleReturnLoan = async (loanId: string) => {
   try {
     await deleteLoan(loanId, getAccessTokenSilently);
     await fetchLoans(); // Refresh list after deletion
-    alert('Loan marked as returned.');
+    const now = new Date();
+    const timeStr = now.toLocaleString(undefined, {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
+    alert(`Loan has been returned.\nReturned at: ${timeStr}`);
   } catch (e) {
     alert('Failed to mark loan as returned.');
   }
