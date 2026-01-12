@@ -6,6 +6,7 @@ export interface AppConfig {
     clientId: string;
     audience?: string;
   };
+  appInsightsConnectionString?: string;
 }
 
 export function loadAppConfig(): AppConfig {
@@ -20,10 +21,14 @@ export function loadAppConfig(): AppConfig {
   const audience =
     (import.meta.env.VITE_AUTH0_AUDIENCE as string | undefined) || undefined;
 
+  const appInsightsConnectionString = import.meta.env
+    .VITE_APPINSIGHTS_CONNECTION_STRING as string | undefined;
+
   return {
     apiBaseUrl,
     loansApiBaseUrl,
     auth0: { domain, clientId, audience },
+    appInsightsConnectionString,
   };
 }
 
@@ -36,7 +41,7 @@ export function buildAuth0Options(cfg: AppConfig) {
     authorizationParams: {
       redirect_uri: window.location.origin,
       audience: cfg.auth0.audience,
-      scope: 'openid profile email read:devices',
+      scope: 'openid profile email',
     },
     cacheLocation: 'localstorage' as const,
     useRefreshTokens: true,
