@@ -25,54 +25,35 @@ const handleReturnLoan = async (loanId: string) => {
   }
 };
 
-// Computed property to check if user has Staff role
-import { computed } from 'vue';
-const isStaff = computed(() => {
-  if (!user.value) return false;
-  const roles =
-    user.value['https://yourdomain/roles'] ||
-    user.value[
-      'https://loanwebappdevnh66store.z33.web.core.windows.net/roles'
-    ] ||
-    user.value['roles'] ||
-    [];
-  return Array.isArray(roles) && roles.includes('Staff');
-});
-
 onMounted(() => {
-  if (isStaff.value) fetchLoans();
+  fetchLoans();
 });
 </script>
 
 <template>
   <div class="loans-view">
     <h1>Loans</h1>
-    <div v-if="!isStaff" class="error">
-      You do not have access to this page.
+    <div v-if="loading" class="loading">Loading loans...</div>
+    <div v-else-if="error" class="error">
+      <p>Error: {{ error }}</p>
+      <button @click="fetchLoans">Retry</button>
     </div>
-    <template v-else>
-      <div v-if="loading" class="loading">Loading loans...</div>
-      <div v-else-if="error" class="error">
-        <p>Error: {{ error }}</p>
-        <button @click="fetchLoans">Retry</button>
-      </div>
-      <div v-else-if="loans.length === 0" class="empty">No loans found.</div>
-      <ul v-else class="list">
-        <li v-for="l in loans" :key="l.id" class="card">
-          <div class="row">
-            <strong class="name">{{ l.deviceName }}</strong>
-            <span class="user">User: {{ l.user }}</span>
-          </div>
-          <div class="dates">
-            <span>Start: {{ l.loanStartDate }}</span>
-            <span>Due: {{ l.loanDueDate }}</span>
-          </div>
-          <button class="return-btn" @click="() => handleReturnLoan(l.id)">
-            Mark as Returned
-          </button>
-        </li>
-      </ul>
-    </template>
+    <div v-else-if="loans.length === 0" class="empty">No loans found.</div>
+    <ul v-else class="list">
+      <li v-for="l in loans" :key="l.id" class="card">
+        <div class="row">
+          <strong class="name">{{ l.deviceName }}</strong>
+          <span class="user">User: {{ l.user }}</span>
+        </div>
+        <div class="dates">
+          <span>Start: {{ l.loanStartDate }}</span>
+          <span>Due: {{ l.loanDueDate }}</span>
+        </div>
+        <button class="return-btn" @click="() => handleReturnLoan(l.id)">
+          Mark as Returned
+        </button>
+      </li>
+    </ul>
   </div>
 </template>
 
